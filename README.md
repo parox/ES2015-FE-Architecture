@@ -4,4 +4,4 @@
 -- Dependencies
 
 npm install gulp && npm install gulp -g
-npm install babel-core babel-preset-es2015 --save-dev
+npm install babel-core babel-cli babel-preset-es2015 --save-dev
