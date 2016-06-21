@@ -1,18 +1,21 @@
 var gulp = require("gulp");
-var babel = require("gulp-babel");
+
 var del = require('del');
+var eslint = require('gulp-eslint');
+var babel = require("gulp-babel");
 
-
+const srcPath  = 'src';
 const distPath = 'dist';
-const srcPath = 'src';
+const tempPath = 'temp';
 const testPath = 'test';
+
 const paths = {
     
     fonts: `${srcPath}/fonts/**/*`,
     i18n: `${srcPath}/i18n/**/*`,
     images: `${srcPath}/images/**/*`,
     scripts: [
-        `${srcPath}/**/*.js`//,
+        `${srcPath}/scripts/**/*.js`//,
         //`!${srcPath}/bower_components/**/*`
     ],
     styles: [`${srcPath}/**/*.scss`],
@@ -27,17 +30,46 @@ const paths = {
 
 
 
-//	---------------------------------------------------------------
-//				Task to clean the dist folder
-//	---------------------------------------------------------------
-gulp.task('cleanDist', function () {
-  return del([`${distPath}/*`]);
+//	----------------------------------------------------------------------------------
+//	Task to clean the dist folder
+//	----------------------------------------------------------------------------------
+gulp.task('clean', function () {
+  return del([`${distPath}/*`, `${tempPath}/*`]);
+});
+
+
+//	----------------------------------------------------------------------------------
+//	Task to identifying and reporting on patterns found in ECMAScript/JavaScript code.
+//	----------------------------------------------------------------------------------
+gulp.task('esLint', function () {
+    return gulp
+	    .src(`${paths.scripts}`)
+	    .pipe(eslint())
+	    .pipe(eslint.format());
 });
 
 
 
-//jsHint
-//babeljs
+//	----------------------------------------------------------------------------------
+//	Task to transpile the js files to ES2015 babeljs task
+//	----------------------------------------------------------------------------------
+gulp.task('babelTranspile', () => {
+	return gulp
+		.src(`${paths.scripts}`)
+		.pipe(babel({
+			plugins: ['transform-runtime']
+		}))
+		.pipe(gulp.dest(`${tempPath}`));
+});
+
+
+
+
+
+
+
+
+
 //jsMinified
 //jsConcat
 //includeJs
