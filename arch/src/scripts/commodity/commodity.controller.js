@@ -10,7 +10,7 @@ class CommodityController {
     this.$state = $state;
   }
 
-  login(form) {
+  login(form) { 
     this.submitted = true;
 
     if (form.$valid) {

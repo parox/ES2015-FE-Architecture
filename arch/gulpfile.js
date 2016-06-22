@@ -3,6 +3,7 @@ var gulp = require("gulp");
 var del = require('del');
 var eslint = require('gulp-eslint');
 var babel = require("gulp-babel");
+var minify = require('gulp-minify');
 
 const srcPath  = 'src';
 const distPath = 'dist';
@@ -16,6 +17,10 @@ const paths = {
     images: `${srcPath}/images/**/*`,
     scripts: [
         `${srcPath}/scripts/**/*.js`//,
+        //`!${srcPath}/bower_components/**/*`
+    ],
+    scriptsTemp: [
+        `${tempPath}/**/*.js`//,
         //`!${srcPath}/bower_components/**/*`
     ],
     styles: [`${srcPath}/**/*.scss`],
@@ -53,7 +58,7 @@ gulp.task('esLint', function () {
 //	----------------------------------------------------------------------------------
 //	Task to transpile the js files to ES2015 babeljs task
 //	----------------------------------------------------------------------------------
-gulp.task('babelTranspile', () => {
+gulp.task('babeljs', () => {
 	return gulp
 		.src(`${paths.scripts}`)
 		.pipe(babel({
@@ -64,13 +69,27 @@ gulp.task('babelTranspile', () => {
 
 
 
+//	----------------------------------------------------------------------------------
+//	Task to minify the js files from temp folder
+//	---------------------------------------------------------------------------------- 
+gulp.task('minify', function() {
+  gulp.src(`${paths.scriptsTemp}`)
+    .pipe(minify({
+        ext:{
+            src:'.js',
+            min:'.min.js'
+        }//,
+        //exclude: ['tasks'],
+        //ignoreFiles: ['.combo.js', '-min.js']
+    }))
+    .pipe(gulp.dest(`${tempPath}`));
+});
 
 
 
 
 
 
-//jsMinified
 //jsConcat
 //includeJs
 
@@ -85,6 +104,9 @@ gulp.task('babelTranspile', () => {
 //runTests
 
 //default => buildDev
+
+
+//hotdeploy
 
 
 
