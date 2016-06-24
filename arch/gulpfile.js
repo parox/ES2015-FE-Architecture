@@ -5,11 +5,16 @@ var eslint = require('gulp-eslint');
 var babel = require("gulp-babel");
 var minify = require('gulp-minify');
 var concat = require('gulp-concat');
+var inject = require('gulp-inject');
 
 const srcPath  = 'src';
 const distPath = 'dist';
 const tempPath = 'temp';
 const testPath = 'test';
+
+const scriptPath = 'scripts';
+const indexPagePath = 'index.html';
+
 const concatenatedJs = 'all-in-one.js';
 
 const paths = {
@@ -22,7 +27,7 @@ const paths = {
         //`!${srcPath}/bower_components/**/*`
     ],
     scriptsTemp: [
-        `${tempPath}/**/*.js`//,
+        `${tempPath}/${scriptPath}/**/*.js`//,
         //`!${srcPath}/bower_components/**/*`
     ],
     styles: [`${srcPath}/**/*.scss`],
@@ -66,7 +71,7 @@ gulp.task('babeljs', () => {
 		.pipe(babel({
 			plugins: ['transform-runtime']
 		}))
-		.pipe(gulp.dest(`${tempPath}`));
+		.pipe(gulp.dest(`${tempPath}/${scriptPath}`));
 });
 
 
@@ -85,7 +90,7 @@ gulp.task('minifyjs', function() {
         //exclude: ['tasks'],
         //ignoreFiles: ['.combo.js', '-min.js']
     }))
-    .pipe(gulp.dest(`${tempPath}`));
+    .pipe(gulp.dest(`${tempPath}/${scriptPath}`));
 });
 
 
@@ -97,6 +102,25 @@ gulp.task('concatjs', function() {
   return gulp
   	.src(`${paths.scriptsTemp}`)
     .pipe(concat(`${concatenatedJs}`))
+    .pipe(gulp.dest(`${tempPath}/${scriptPath}`));
+});
+
+
+
+//	----------------------------------------------------------------------------------
+//	Task to include the js files into html
+//	----------------------------------------------------------------------------------  
+
+
+gulp.task('includejs', function () {
+  var target = gulp
+  	.src(`${tempPath}/${indexPagePath}`);
+
+  // It's not necessary to read the files (will speed up things), we're only after their paths:
+  var sources = gulp.src([`./${tempPath}/${scriptPath}/${concatenatedJs}`], {read: false});
+
+  return target
+  	.pipe(inject(sources, {relative: true}))
     .pipe(gulp.dest(`${tempPath}`));
 });
 

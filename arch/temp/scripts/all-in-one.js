@@ -1,4 +1,5 @@
 "use strict";
+"use strict";
 'use strict';
 
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
@@ -47,3 +48,4 @@ var CommodityController = function () {
 }();
 
 angular.module('coreApp').controller('CommodityController', CommodityController);
+"use strict";function _interopRequireDefault(e){return e&&e.__esModule?e:{"default":e}}var _classCallCheck2=require("babel-runtime/helpers/classCallCheck"),_classCallCheck3=_interopRequireDefault(_classCallCheck2),_createClass2=require("babel-runtime/helpers/createClass"),_createClass3=_interopRequireDefault(_createClass2),CommodityController=function(){function e(t,s){(0,_classCallCheck3["default"])(this,e),this.user={},this.errors={},this.submitted=!1,this.Auth=t,this.$state=s}return(0,_createClass3["default"])(e,[{key:"login",value:function(e){var t=this;this.submitted=!0,e.$valid&&this.Auth.login({email:this.user.email,password:this.user.password}).then(function(){t.$state.go("main")})["catch"](function(e){t.errors.other=e.message})}}]),e}();angular.module("coreApp").controller("CommodityController",CommodityController);
