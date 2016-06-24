@@ -4,11 +4,13 @@ var del = require('del');
 var eslint = require('gulp-eslint');
 var babel = require("gulp-babel");
 var minify = require('gulp-minify');
+var concat = require('gulp-concat');
 
 const srcPath  = 'src';
 const distPath = 'dist';
 const tempPath = 'temp';
 const testPath = 'test';
+const concatenatedJs = 'all-in-one.js';
 
 const paths = {
     
@@ -72,8 +74,9 @@ gulp.task('babeljs', () => {
 //	----------------------------------------------------------------------------------
 //	Task to minify the js files from temp folder
 //	---------------------------------------------------------------------------------- 
-gulp.task('minify', function() {
-  gulp.src(`${paths.scriptsTemp}`)
+gulp.task('minifyjs', function() {
+  return gulp
+  	.src(`${paths.scriptsTemp}`)
     .pipe(minify({
         ext:{
             src:'.js',
@@ -87,10 +90,18 @@ gulp.task('minify', function() {
 
 
 
+//	----------------------------------------------------------------------------------
+//	Task to concat the js files from temp folder
+//	----------------------------------------------------------------------------------  
+gulp.task('concatjs', function() {
+  return gulp
+  	.src(`${paths.scriptsTemp}`)
+    .pipe(concat(`${concatenatedJs}`))
+    .pipe(gulp.dest(`${tempPath}`));
+});
 
 
 
-//jsConcat
 //includeJs
 
 //cssHint

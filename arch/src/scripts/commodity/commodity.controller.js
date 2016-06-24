@@ -1,5 +1,3 @@
-'use strict';
-
 class CommodityController {
   constructor(Auth, $state) {
     this.user = {};
