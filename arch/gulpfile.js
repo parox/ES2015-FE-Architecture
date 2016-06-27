@@ -112,7 +112,7 @@ gulp.task('concatjs', function() {
 //	----------------------------------------------------------------------------------  
 
 
-gulp.task('includejs', function () {
+gulp.task('includejs:deploy', function () {
   var target = gulp
   	.src(`${tempPath}/${indexPagePath}`);
 
@@ -124,9 +124,20 @@ gulp.task('includejs', function () {
     .pipe(gulp.dest(`${tempPath}`));
 });
 
+gulp.task('includejs:dev', function () {
+  var target = gulp
+  	.src(`${tempPath}/${indexPagePath}`);
+
+  // It's not necessary to read the files (will speed up things), we're only after their paths:
+  var sources = gulp.src([`./${tempPath}/${scriptPath}/**/*.js`], {read: false});
+
+  return target
+  	.pipe(inject(sources, {relative: true, ignorePath: `./${tempPath}/${scriptPath}/${concatenatedJs}`}))
+    .pipe(gulp.dest(`${tempPath}`));
+});
 
 
-//includeJs
+
 
 //cssHint
 //sassCompile
