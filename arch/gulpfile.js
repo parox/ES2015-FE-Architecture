@@ -6,6 +6,8 @@ var babel = require("gulp-babel");
 var minify = require('gulp-minify');
 var concat = require('gulp-concat');
 var inject = require('gulp-inject');
+var sassLint = require('gulp-sass-lint');
+var sass = require('gulp-sass');
 
 const srcPath  = 'src';
 const distPath = 'dist';
@@ -30,7 +32,9 @@ const paths = {
         `${tempPath}/${scriptPath}/**/*.js`//,
         //`!${srcPath}/bower_components/**/*`
     ],
-    styles: [`${srcPath}/**/*.scss`],
+    
+    styles: [`${srcPath}/**/*.s+(a|c)ss`],
+    
     views: `${srcPath}/**/*.html`,
     
     test: [`${testPath}/{app,components}/**/*.{spec,mock}.js`],
@@ -138,9 +142,33 @@ gulp.task('includejs:dev', function () {
 
 
 
+//	----------------------------------------------------------------------------------
+//	Task to check sass files standards
+//	----------------------------------------------------------------------------------  
 
-//cssHint
-//sassCompile
+
+gulp.task('sassLint', function () {
+  return gulp.src(`${paths.styles}`)
+    .pipe(sassLint())
+    .pipe(sassLint.format())
+    .pipe(sassLint.failOnError())
+});
+
+
+
+//	----------------------------------------------------------------------------------
+//	Task to check sass files standards
+//	----------------------------------------------------------------------------------  
+
+
+gulp.task('sassCompile', function () {
+  return gulp.src(`${paths.styles}`)
+    .pipe(sass().on('error', sass.logError))
+    .pipe(gulp.dest(`${tempPath}`));
+});
+
+
+
 //cssMinified
 //cssConcat
 //includeCss
