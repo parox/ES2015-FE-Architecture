@@ -8,6 +8,7 @@ var concat = require('gulp-concat');
 var inject = require('gulp-inject');
 var sassLint = require('gulp-sass-lint');
 var sass = require('gulp-sass');
+var cleanCSS = require('gulp-clean-css');
 
 const srcPath  = 'src';
 const distPath = 'dist';
@@ -15,9 +16,11 @@ const tempPath = 'temp';
 const testPath = 'test';
 
 const scriptPath = 'scripts';
+const stylesPath = 'styles';
 const indexPagePath = 'index.html';
 
 const concatenatedJs = 'all-in-one.js';
+const concatenatedCss = 'all-in-one.css';
 
 const paths = {
     
@@ -34,6 +37,8 @@ const paths = {
     ],
     
     styles: [`${srcPath}/**/*.s+(a|c)ss`],
+    stylesDist: [`${distPath}/styles`],
+    stylesTemp: [`${tempPath}/${stylesPath}/**/*.css`],
     
     views: `${srcPath}/**/*.html`,
     
@@ -169,9 +174,59 @@ gulp.task('sassCompile', function () {
 
 
 
-//cssMinified
-//cssConcat
-//includeCss
+//	----------------------------------------------------------------------------------
+//	Task to minify css files
+//	----------------------------------------------------------------------------------  
+
+
+gulp.task('minifyCss', function() {
+  return gulp.src(`${tempPath}/styles/**/*.css`)
+    .pipe(cleanCSS({compatibility: 'ie8'}))
+	.pipe(gulp.dest(`${tempPath}/${stylesPath}`));
+});
+
+
+
+//	----------------------------------------------------------------------------------
+//	Task to concat the js files from temp folder
+//	----------------------------------------------------------------------------------  
+gulp.task('concatCss', function() {
+  return gulp
+  	.src(`${paths.stylesTemp}`)
+    .pipe(concat(`${concatenatedCss}`))
+    .pipe(gulp.dest(`${tempPath}/${stylesPath}`));
+});
+
+
+//	----------------------------------------------------------------------------------
+//	Task to include the js files into html
+//	----------------------------------------------------------------------------------  
+
+
+gulp.task('includeCss:deploy', function () {
+  var target = gulp
+  	.src(`${tempPath}/${indexPagePath}`);
+
+  // It's not necessary to read the files (will speed up things), we're only after their paths:
+  var sources = gulp.src([`./${tempPath}/${stylesPath}/${concatenatedCss}`], {read: false});
+
+  return target
+  	.pipe(inject(sources, {relative: true}))
+    .pipe(gulp.dest(`${tempPath}`));
+});
+
+gulp.task('includeCss:dev', function () {
+  var target = gulp
+  	.src(`${tempPath}/${indexPagePath}`);
+
+  // It's not necessary to read the files (will speed up things), we're only after their paths:
+  var sources = gulp.src([`./${tempPath}/${stylesPath}/**/*.css`], {read: false});
+
+  return target
+  	.pipe(inject(sources, {relative: true, ignorePath: `./${tempPath}/${stylesPath}/${concatenatedCss}`}))
+    .pipe(gulp.dest(`${tempPath}`));
+});
+
 
 //buildDev
 //buildDeploy
