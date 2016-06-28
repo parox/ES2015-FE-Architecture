@@ -17,7 +17,15 @@ const testPath = 'test';
 
 const scriptPath = 'scripts';
 const stylesPath = 'styles';
+const fontsPath = 'fonts';
+const i18nPath = 'i18n';
+const imagesPath = 'images';
+const thirdPartyPath = 'thirdparty';
+const viewsPath = 'views';
+
 const indexPagePath = 'index.html';
+const viewsExtension = 'html';
+const fontsExtensions = '{ttf,woff,eof,svg}';
 
 const concatenatedJs = 'all-in-one.js';
 const concatenatedCss = 'all-in-one.css';
@@ -223,12 +231,72 @@ gulp.task('includeCss:dev', function () {
   var sources = gulp.src([`./${tempPath}/${stylesPath}/**/*.css`], {read: false});
 
   return target
-  	.pipe(inject(sources, {relative: true, ignorePath: `./${tempPath}/${stylesPath}/${concatenatedCss}`}))
+  	.pipe(inject(sources, {
+  		relative: true, 
+  		ignorePath: `./${tempPath}/${stylesPath}/${concatenatedCss}`
+  	}))
     .pipe(gulp.dest(`${tempPath}`));
 });
 
 
-//buildDev
+
+
+
+//	----------------------------------------------------------------------------------
+//	Task to copy files to temp folder
+//	----------------------------------------------------------------------------------  
+gulp.task('copy:fonts', function() {
+  return gulp
+    .src(`./${srcPath}/${fontsPath}/**/*.${fontsExtensions}`)
+    .pipe(gulp.dest(`./${tempPath}/${fontsPath}`));
+});
+
+gulp.task('copy:i18n', function() {
+  return gulp
+    .src(`./${srcPath}/${i18nPath}/**/*`)
+    .pipe(gulp.dest(`./${tempPath}/${i18nPath}`));
+});
+
+gulp.task('copy:images', function() {
+  return gulp
+    .src(`./${srcPath}/${imagesPath}/**/*`)
+    .pipe(gulp.dest(`./${tempPath}/${imagesPath}`));
+});
+
+gulp.task('copy:thirdparty', function() {
+  return gulp
+    .src(`./${srcPath}/${thirdPartyPath}/**/*`)
+    .pipe(gulp.dest(`./${tempPath}/${thirdPartyPath}`));
+});
+
+gulp.task('copy:views', function() {
+	console.log(`./${srcPath}/**/*.${viewsExtension}`);
+  return gulp
+    .src(`./${srcPath}/**/*.${viewsExtension}`)
+    .pipe(gulp.dest(`./${tempPath}`));
+});
+
+
+
+
+//	----------------------------------------------------------------------------------
+//	Task to build files to dist
+//	----------------------------------------------------------------------------------  
+gulp.task('build:dev', [
+	'clean', 
+	'copy:views',
+	'copy:fonts',
+	'copy:i18n',
+	'copy:images',
+	'copy:thirdparty',
+	
+	'sassCompile',
+	//'minifyCss',
+	//'concatCss',
+	'includeCss:dev'
+]);
+
+
 //buildDeploy
 //runTests
 
