@@ -9,6 +9,8 @@ var inject = require('gulp-inject');
 var sassLint = require('gulp-sass-lint');
 var sass = require('gulp-sass');
 var cleanCSS = require('gulp-clean-css');
+var gulpsync = require('gulp-sync')(gulp);
+var wiredep = require('wiredep').stream;
 
 const srcPath  = 'src';
 const distPath = 'dist';
@@ -26,6 +28,7 @@ const viewsPath = 'views';
 const indexPagePath = 'index.html';
 const viewsExtension = 'html';
 const fontsExtensions = '{ttf,woff,eof,svg}';
+const scriptsExtension = 'js';
 
 const concatenatedJs = 'all-in-one.js';
 const concatenatedCss = 'all-in-one.css';
@@ -40,11 +43,17 @@ const paths = {
         //`!${srcPath}/bower_components/**/*`
     ],
     scriptsTemp: [
-        `${tempPath}/${scriptPath}/**/*.js`//,
+        `${tempPath}/${scriptPath}/**/*.js`,
         //`!${srcPath}/bower_components/**/*`
     ],
+    scriptsConcat: [
+    	`${tempPath}/${scriptPath}/**/*min.js`,
+    ],
+    scriptsConcatExclude: [
+    	`${tempPath}/${scriptPath}/**/*min.js`,
+    ],
     
-    styles: [`${srcPath}/**/*.s+(a|c)ss`],
+    styles: [`${srcPath}/${stylesPath}/**/*.s+(a|c)ss`],
     stylesDist: [`${distPath}/styles`],
     stylesTemp: [`${tempPath}/${stylesPath}/**/*.css`],
     
@@ -61,10 +70,18 @@ const paths = {
 //	----------------------------------------------------------------------------------
 //	Task to clean the dist folder
 //	----------------------------------------------------------------------------------
-gulp.task('clean', function () {
-  return del([`${distPath}/*`, `${tempPath}/*`]);
+gulp.task('clean:dist', function () {
+  return del([`${distPath}/*`]);
 });
 
+gulp.task('clean:temp', function () {
+  return del([`${tempPath}/*`]);
+});
+
+gulp.task('clean', gulpsync.sync([
+	'clean:dist',
+	'clean:temp'
+]));
 
 //	----------------------------------------------------------------------------------
 //	Task to identifying and reporting on patterns found in ECMAScript/JavaScript code.
@@ -78,9 +95,9 @@ gulp.task('esLint', function () {
 
 
 //	----------------------------------------------------------------------------------
-//	Task to transpile the js files to ES2015 babeljs task
+//	Task to transpile the js files to ES2015 babelJs task
 //	----------------------------------------------------------------------------------
-gulp.task('babeljs', ['esLint'], () => {
+gulp.task('babelJs', () => {
 	return gulp
 		.src(`${paths.scripts}`)
 		.pipe(babel({
@@ -94,15 +111,15 @@ gulp.task('babeljs', ['esLint'], () => {
 //	----------------------------------------------------------------------------------
 //	Task to minify the js files from temp folder
 //	---------------------------------------------------------------------------------- 
-gulp.task('minifyjs', function() {
+gulp.task('minifyJs', function() {
   return gulp
   	.src(`${paths.scriptsTemp}`)
     .pipe(minify({
         ext:{
             src:'.js',
             min:'.min.js'
-        }//,
-        //exclude: ['tasks'],
+        },
+        exclude: [`.min.js$`, `${concatenatedJs}`],
         //ignoreFiles: ['.combo.js', '-min.js']
     }))
     .pipe(gulp.dest(`${tempPath}/${scriptPath}`));
@@ -113,9 +130,9 @@ gulp.task('minifyjs', function() {
 //	----------------------------------------------------------------------------------
 //	Task to concat the js files from temp folder
 //	----------------------------------------------------------------------------------  
-gulp.task('concatjs', function() {
+gulp.task('concatJs', function() {
   return gulp
-  	.src(`${paths.scriptsTemp}`)
+  	.src([`${paths.scriptsConcatExclude}`])
     .pipe(concat(`${concatenatedJs}`))
     .pipe(gulp.dest(`${tempPath}/${scriptPath}`));
 });
@@ -127,7 +144,7 @@ gulp.task('concatjs', function() {
 //	----------------------------------------------------------------------------------  
 
 
-gulp.task('includeJs:deploy', ['babeljs'], function () {
+gulp.task('includeJs:deploy', function () {
   var target = gulp
   	.src(`${tempPath}/${indexPagePath}`);
 
@@ -139,7 +156,7 @@ gulp.task('includeJs:deploy', ['babeljs'], function () {
     .pipe(gulp.dest(`${tempPath}`));
 });
 
-gulp.task('includeJs:dev', ['babeljs'], function () {
+gulp.task('includeJs:dev', function () {
   var target = gulp
   	.src(`${tempPath}/${indexPagePath}`);
 
@@ -173,7 +190,7 @@ gulp.task('sassLint', function () {
 //	----------------------------------------------------------------------------------  
 
 
-gulp.task('sassCompile', ['sassLint'], function () {
+gulp.task('sassCompile', function () {
   return gulp.src(`${paths.styles}`)
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest(`${tempPath}`));
@@ -210,7 +227,7 @@ gulp.task('concatCss', function() {
 //	----------------------------------------------------------------------------------  
 
 
-gulp.task('includeCss:deploy', ['sassCompile'], function () {
+gulp.task('includeCss:deploy', function () {
   var target = gulp
   	.src(`${tempPath}/${indexPagePath}`);
 
@@ -218,11 +235,12 @@ gulp.task('includeCss:deploy', ['sassCompile'], function () {
   var sources = gulp.src([`./${tempPath}/${stylesPath}/${concatenatedCss}`], {read: false});
 
   return target
+	
   	.pipe(inject(sources, {relative: true}))
     .pipe(gulp.dest(`${tempPath}`));
 });
 
-gulp.task('includeCss:dev', ['sassCompile'], function () {
+gulp.task('includeCss:dev', function () {
   var target = gulp
   	.src(`${tempPath}/${indexPagePath}`);
 
@@ -230,6 +248,7 @@ gulp.task('includeCss:dev', ['sassCompile'], function () {
   var sources = gulp.src([`./${tempPath}/${stylesPath}/**/*.css`], {read: false});
 
   return target
+	
   	.pipe(inject(sources, {
   		relative: true, 
   		ignorePath: `./${tempPath}/${stylesPath}/${concatenatedCss}`
@@ -237,7 +256,17 @@ gulp.task('includeCss:dev', ['sassCompile'], function () {
     .pipe(gulp.dest(`${tempPath}`));
 });
 
+gulp.task('bower', function () {
+	return gulp
+		.src(`${tempPath}/${indexPagePath}`);
+		.pipe(wiredep({
+			//optional: 'configuration',
+			//goes: 'here',
+    		directory: 'bower_components'
+		}))
+		.pipe(gulp.dest(`${tempPath}`));
 
+});
 
 
 
@@ -269,44 +298,82 @@ gulp.task('copy:thirdparty', function() {
 });
 
 gulp.task('copy:views', function() {
-	console.log(`./${srcPath}/**/*.${viewsExtension}`);
   return gulp
     .src(`./${srcPath}/**/*.${viewsExtension}`)
     .pipe(gulp.dest(`./${tempPath}`));
 });
 
+gulp.task('copy:scripts', function() {
+  return gulp
+    .src(`./${srcPath}/**/*.${scriptsExtension}`)
+    .pipe(gulp.dest(`./${tempPath}`));
+});
 
-gulp.task('prepareEnviroment', ['clean']);
+
+
+gulp.task('copyToDist', function() {
+  return gulp
+    .src(`./${tempPath}/**/*`)
+    .pipe(gulp.dest(`./${distPath}`));
+});
 
 
 
 
 //	----------------------------------------------------------------------------------
-//	Task to build files to dist
+//	Task to build Development Enviroment files to dist
 //	----------------------------------------------------------------------------------  
-gulp.task('build:dev', [
+gulp.task('build:dev', gulpsync.sync([
 	'clean',
-	'prepareEnviroment',
 	'copy:views',
 	'copy:fonts',
 	'copy:i18n',
 	'copy:images',
 	'copy:thirdparty',
 	
-	//'sassCompile',
-	//'minifyCss',
-	//'concatCss',
+	'sassLint',
+	'sassCompile',
 	'includeCss:dev',
-	'includeJs:dev'
-]);
+
+	//'esLint',
+	//'babelJs',
+	'copy:scripts',
+	'includeJs:dev',
+	'copyToDist',
+	'clean:temp'
+]));
 
 
-//buildDeploy
+//	----------------------------------------------------------------------------------
+//	Task to build Production Enviroment files to dist
+//	----------------------------------------------------------------------------------  
+gulp.task('build:deploy', gulpsync.sync([
+	'clean',
+	'copy:views',
+	'copy:fonts',
+	'copy:i18n',
+	'copy:images',
+	'copy:thirdparty',
+	
+	'sassLint',
+	'sassCompile',
+	'minifyCss',
+	'concatCss',
+	'includeCss:deploy',
+	
+	//'esLint',
+	//'babelJs',
+	'copy:scripts',
+	'minifyJs',
+	'concatJs',
+	'includeJs:deploy',
+
+	'copyToDist',
+	'clean:temp'
+]));
+
+
 //runTests
-
-//default => buildDev
-
-
 //hotdeploy
 
 
