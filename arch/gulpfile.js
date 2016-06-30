@@ -58,7 +58,6 @@ const paths = {
 
 
 
-
 //	----------------------------------------------------------------------------------
 //	Task to clean the dist folder
 //	----------------------------------------------------------------------------------
@@ -78,11 +77,10 @@ gulp.task('esLint', function () {
 });
 
 
-
 //	----------------------------------------------------------------------------------
 //	Task to transpile the js files to ES2015 babeljs task
 //	----------------------------------------------------------------------------------
-gulp.task('babeljs', () => {
+gulp.task('babeljs', ['esLint'], () => {
 	return gulp
 		.src(`${paths.scripts}`)
 		.pipe(babel({
@@ -129,7 +127,7 @@ gulp.task('concatjs', function() {
 //	----------------------------------------------------------------------------------  
 
 
-gulp.task('includejs:deploy', function () {
+gulp.task('includeJs:deploy', ['babeljs'], function () {
   var target = gulp
   	.src(`${tempPath}/${indexPagePath}`);
 
@@ -141,7 +139,7 @@ gulp.task('includejs:deploy', function () {
     .pipe(gulp.dest(`${tempPath}`));
 });
 
-gulp.task('includejs:dev', function () {
+gulp.task('includeJs:dev', ['babeljs'], function () {
   var target = gulp
   	.src(`${tempPath}/${indexPagePath}`);
 
@@ -149,11 +147,12 @@ gulp.task('includejs:dev', function () {
   var sources = gulp.src([`./${tempPath}/${scriptPath}/**/*.js`], {read: false});
 
   return target
-  	.pipe(inject(sources, {relative: true, ignorePath: `./${tempPath}/${scriptPath}/${concatenatedJs}`}))
+  	.pipe(inject(sources, {
+  		relative: true, 
+  		ignorePath: `./${tempPath}/${scriptPath}/${concatenatedJs}`
+  	}))
     .pipe(gulp.dest(`${tempPath}`));
 });
-
-
 
 //	----------------------------------------------------------------------------------
 //	Task to check sass files standards
@@ -174,7 +173,7 @@ gulp.task('sassLint', function () {
 //	----------------------------------------------------------------------------------  
 
 
-gulp.task('sassCompile', function () {
+gulp.task('sassCompile', ['sassLint'], function () {
   return gulp.src(`${paths.styles}`)
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest(`${tempPath}`));
@@ -211,7 +210,7 @@ gulp.task('concatCss', function() {
 //	----------------------------------------------------------------------------------  
 
 
-gulp.task('includeCss:deploy', function () {
+gulp.task('includeCss:deploy', ['sassCompile'], function () {
   var target = gulp
   	.src(`${tempPath}/${indexPagePath}`);
 
@@ -223,7 +222,7 @@ gulp.task('includeCss:deploy', function () {
     .pipe(gulp.dest(`${tempPath}`));
 });
 
-gulp.task('includeCss:dev', function () {
+gulp.task('includeCss:dev', ['sassCompile'], function () {
   var target = gulp
   	.src(`${tempPath}/${indexPagePath}`);
 
@@ -277,23 +276,28 @@ gulp.task('copy:views', function() {
 });
 
 
+gulp.task('prepareEnviroment', ['clean']);
+
+
 
 
 //	----------------------------------------------------------------------------------
 //	Task to build files to dist
 //	----------------------------------------------------------------------------------  
 gulp.task('build:dev', [
-	'clean', 
+	'clean',
+	'prepareEnviroment',
 	'copy:views',
 	'copy:fonts',
 	'copy:i18n',
 	'copy:images',
 	'copy:thirdparty',
 	
-	'sassCompile',
+	//'sassCompile',
 	//'minifyCss',
 	//'concatCss',
-	'includeCss:dev'
+	'includeCss:dev',
+	'includeJs:dev'
 ]);
 
 
@@ -307,8 +311,4 @@ gulp.task('build:dev', [
 
 
 
-gulp.task("default", function () {
-  return gulp.src("src/scripts/app.js")
-    .pipe(babel())
-    .pipe(gulp.dest("dist"));
-});
+gulp.task("default", ['build:dev']);
