@@ -1,0 +1,27 @@
+{
+  "name": "src",
+  "homepage": "https://github.com/parox/ES2015-FE-Architecture",
+  "authors": [
+    "weslley silva <weslleywellington@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [
+    "amd",
+    "es6",
+    "globals",
+    "node",
+    "yui"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-material": "~1.0.9"
+  }
+}

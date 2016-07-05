@@ -25,6 +25,9 @@ const imagesPath = 'images';
 const thirdPartyPath = 'thirdparty';
 const viewsPath = 'views';
 
+const bowerJsonPath = './src/bower.json';
+const bowerComponentsPath = 'src/bower_components';
+
 const indexPagePath = 'index.html';
 const viewsExtension = 'html';
 const fontsExtensions = '{ttf,woff,eof,svg}';
@@ -193,7 +196,7 @@ gulp.task('sassLint', function () {
 gulp.task('sassCompile', function () {
   return gulp.src(`${paths.styles}`)
     .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest(`${tempPath}`));
+    .pipe(gulp.dest(`${tempPath}/${stylesPath}`));
 });
 
 
@@ -257,12 +260,12 @@ gulp.task('includeCss:dev', function () {
 });
 
 gulp.task('bower', function () {
+	
 	return gulp
-		.src(`${tempPath}/${indexPagePath}`);
+		.src(`${tempPath}/${indexPagePath}`)
 		.pipe(wiredep({
-			//optional: 'configuration',
-			//goes: 'here',
-    		directory: 'bower_components'
+    		directory: `${bowerComponentsPath}`,
+    		bowerJson: require(`${bowerJsonPath}`)
 		}))
 		.pipe(gulp.dest(`${tempPath}`));
 
@@ -323,7 +326,7 @@ gulp.task('copyToDist', function() {
 //	----------------------------------------------------------------------------------
 //	Task to build Development Enviroment files to dist
 //	----------------------------------------------------------------------------------  
-gulp.task('build:dev', gulpsync.sync([
+gulp.task('dev', gulpsync.sync([
 	'clean',
 	'copy:views',
 	'copy:fonts',
@@ -339,6 +342,9 @@ gulp.task('build:dev', gulpsync.sync([
 	//'babelJs',
 	'copy:scripts',
 	'includeJs:dev',
+
+	'bower',
+
 	'copyToDist',
 	'clean:temp'
 ]));
@@ -347,7 +353,7 @@ gulp.task('build:dev', gulpsync.sync([
 //	----------------------------------------------------------------------------------
 //	Task to build Production Enviroment files to dist
 //	----------------------------------------------------------------------------------  
-gulp.task('build:deploy', gulpsync.sync([
+gulp.task('deploy', gulpsync.sync([
 	'clean',
 	'copy:views',
 	'copy:fonts',
@@ -368,8 +374,10 @@ gulp.task('build:deploy', gulpsync.sync([
 	'concatJs',
 	'includeJs:deploy',
 
-	'copyToDist',
-	'clean:temp'
+	'bower',
+
+	//'copyToDist',
+	//'clean:temp'
 ]));
 
 
@@ -378,4 +386,4 @@ gulp.task('build:deploy', gulpsync.sync([
 
 
 
-gulp.task("default", ['build:dev']);
+gulp.task("default", ['dev']);
