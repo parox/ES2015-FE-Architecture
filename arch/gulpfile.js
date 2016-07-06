@@ -32,9 +32,11 @@ const indexPagePath = 'index.html';
 const viewsExtension = 'html';
 const fontsExtensions = '{ttf,woff,eof,svg}';
 const scriptsExtension = 'js';
+const es6Extension = 'es6.js';
 
 const concatenatedJs = 'all-in-one.js';
 const concatenatedCss = 'all-in-one.css';
+
 
 const paths = {
     
@@ -45,9 +47,13 @@ const paths = {
         `${srcPath}/scripts/**/*.js`//,
         //`!${srcPath}/bower_components/**/*`
     ],
+    babelscripts: [
+        `${srcPath}/scripts/**/*.${es6Extension}`//,
+        //`!${srcPath}/bower_components/**/*`
+    ],
     scriptsTemp: [
         `${tempPath}/${scriptPath}/**/*.js`,
-        //`!${srcPath}/bower_components/**/*`
+        `!${tempPath}/${scriptPath}/**/*.${es6Extension}`
     ],
     scriptsConcat: [
     	`${tempPath}/${scriptPath}/**/*min.js`,
@@ -91,7 +97,7 @@ gulp.task('clean', gulpsync.sync([
 //	----------------------------------------------------------------------------------
 gulp.task('esLint', function () {
     return gulp
-	    .src(`${paths.scripts}`)
+	    .src(`${paths.babelscripts}`)
 	    .pipe(eslint())
 	    .pipe(eslint.format());
 });
@@ -102,7 +108,7 @@ gulp.task('esLint', function () {
 //	----------------------------------------------------------------------------------
 gulp.task('babelJs', () => {
 	return gulp
-		.src(`${paths.scripts}`)
+		.src(`${paths.babelscripts}`)
 		.pipe(babel({
 			plugins: ['transform-runtime']
 		}))
@@ -115,17 +121,47 @@ gulp.task('babelJs', () => {
 //	Task to minify the js files from temp folder
 //	---------------------------------------------------------------------------------- 
 gulp.task('minifyJs', function() {
+	
   return gulp
-  	.src(`${paths.scriptsTemp}`)
+  	.src(`${tempPath}/${scriptPath}/**/*.${scriptsExtension}`)
     .pipe(minify({
         ext:{
             src:'.js',
-            min:'.min.js'
+            min:`.min.${scriptsExtension}`
         },
-        exclude: [`.min.js$`, `${concatenatedJs}`],
-        //ignoreFiles: ['.combo.js', '-min.js']
+        exclude: [`.min.js$`, `${concatenatedJs}`]
     }))
     .pipe(gulp.dest(`${tempPath}/${scriptPath}`));
+});
+
+//	----------------------------------------------------------------------------------
+//	Task to remove the js files that are not minified
+//	---------------------------------------------------------------------------------- 
+gulp.task('removeUnminifiedFiles', function() {
+	
+	return del([
+		`${tempPath}/${scriptPath}/**/*.js`,
+		`!${tempPath}/${scriptPath}/**/*min.js`
+	]);
+});
+
+
+//	----------------------------------------------------------------------------------
+//	Task to remove the js files that are not minified
+//	---------------------------------------------------------------------------------- 
+gulp.task('removeUnconcatenatedFiles', function() {
+	
+	return del([
+		//	Scripts
+		`${tempPath}/${scriptPath}/**/*min.js`,
+		`${tempPath}/${scriptPath}/**/*/`,
+		`!${tempPath}/${scriptPath}/${concatenatedJs}`,
+
+		//	Styles
+		`${tempPath}/${stylesPath}/**/*.css`,
+		`${tempPath}/${stylesPath}/**/*/`,
+		`!${tempPath}/${stylesPath}/${concatenatedCss}`
+	]);
 });
 
 
@@ -207,11 +243,10 @@ gulp.task('sassCompile', function () {
 
 
 gulp.task('minifyCss', function() {
-  return gulp.src(`${tempPath}/styles/**/*.css`)
+  return gulp.src(`${tempPath}/${stylesPath}/**/*.css`)
     .pipe(cleanCSS({compatibility: 'ie8'}))
 	.pipe(gulp.dest(`${tempPath}/${stylesPath}`));
 });
-
 
 
 //	----------------------------------------------------------------------------------
@@ -308,7 +343,7 @@ gulp.task('copy:views', function() {
 
 gulp.task('copy:scripts', function() {
   return gulp
-    .src(`./${srcPath}/**/*.${scriptsExtension}`)
+    .src([`./${srcPath}/**/*.${scriptsExtension}`, `!${srcPath}/**/*.${es6Extension}`])
     .pipe(gulp.dest(`./${tempPath}`));
 });
 
@@ -338,8 +373,8 @@ gulp.task('dev', gulpsync.sync([
 	'sassCompile',
 	'includeCss:dev',
 
-	//'esLint',
-	//'babelJs',
+	'esLint',
+	'babelJs',
 	'copy:scripts',
 	'includeJs:dev',
 
@@ -367,17 +402,19 @@ gulp.task('deploy', gulpsync.sync([
 	'concatCss',
 	'includeCss:deploy',
 	
-	//'esLint',
-	//'babelJs',
+	'esLint',
+	'babelJs',
 	'copy:scripts',
 	'minifyJs',
+	'removeUnminifiedFiles',
 	'concatJs',
+	'removeUnconcatenatedFiles',
 	'includeJs:deploy',
 
 	'bower',
 
-	//'copyToDist',
-	//'clean:temp'
+	'copyToDist',
+	'clean:temp'
 ]));
 
 
