@@ -10,6 +10,7 @@ var sassLint = require('gulp-sass-lint');
 var sass = require('gulp-sass');
 var cleanCSS = require('gulp-clean-css');
 var gulpsync = require('gulp-sync')(gulp);
+var bower = require('gulp-bower');
 var wiredep = require('wiredep').stream;
 
 const srcPath  = 'src';
@@ -85,6 +86,10 @@ gulp.task('clean:dist', function () {
 
 gulp.task('clean:temp', function () {
   return del([`${tempPath}/*`]);
+});
+
+gulp.task('clean:bowerComponent', function () {
+  return del([`${bowerComponentsPath}*`]);
 });
 
 gulp.task('clean', gulpsync.sync([
@@ -294,7 +299,28 @@ gulp.task('includeCss:dev', function () {
     .pipe(gulp.dest(`${tempPath}`));
 });
 
-gulp.task('bower', function () {
+
+
+gulp.task('bower', function() {
+  return bower({ 
+  	cmd: 'install',
+  	cwd: (`${srcPath}`), 
+  	//directory: `${bowerComponentsPath}`,
+  	interactive: true
+  });
+});
+
+gulp.task('bower:deploy', function() {
+  return bower({ 
+  	cmd: 'install',
+  	cwd: (`${srcPath}`), 
+  	//directory: `${bowerComponentsPath}`,
+  	interactive: true
+  });
+});
+
+
+gulp.task('bowerInject', function () {
 	
 	return gulp
 		.src(`${tempPath}/${indexPagePath}`)
@@ -305,6 +331,7 @@ gulp.task('bower', function () {
 		.pipe(gulp.dest(`${tempPath}`));
 
 });
+
 
 
 
@@ -347,8 +374,6 @@ gulp.task('copy:scripts', function() {
     .pipe(gulp.dest(`./${tempPath}`));
 });
 
-
-
 gulp.task('copyToDist', function() {
   return gulp
     .src(`./${tempPath}/**/*`)
@@ -379,6 +404,7 @@ gulp.task('dev', gulpsync.sync([
 	'includeJs:dev',
 
 	'bower',
+	'bowerInject',
 
 	'copyToDist',
 	'clean:temp'
@@ -390,6 +416,7 @@ gulp.task('dev', gulpsync.sync([
 //	----------------------------------------------------------------------------------  
 gulp.task('deploy', gulpsync.sync([
 	'clean',
+	'clean:bowerComponent',
 	'copy:views',
 	'copy:fonts',
 	'copy:i18n',
@@ -411,7 +438,8 @@ gulp.task('deploy', gulpsync.sync([
 	'removeUnconcatenatedFiles',
 	'includeJs:deploy',
 
-	'bower',
+	'bower:deploy',
+	'bowerInject',
 
 	'copyToDist',
 	'clean:temp'
