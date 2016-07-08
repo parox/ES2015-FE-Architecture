@@ -1,3 +1,7 @@
-var app = 'Hello World => app';
+(function() {
+    'use strict';
+    var app = angular.module('app', [
+        'ngMaterial'
+    ]);
 
-alert(app);
+}).call(this);

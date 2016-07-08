@@ -24,6 +24,26 @@
         Hello Daptive
 
 
+        <div layout="row" ng-controller="mainCtrl as vm">
+          <md-sidenav md-component-id="left" class="md-sidenav-left">
+            Left Nav!
+          </md-sidenav>
+          <md-content>
+            Center Content
+            <md-button ng-click="vm.openLeftMenu()">
+              Open Left Menu
+            </md-button>
+          </md-content>
+          <md-sidenav md-component-id="right" md-is-locked-open="$mdMedia('min-width: 333px')" class="md-sidenav-right">
+            <form>
+              <md-input-container>
+                <label for="testInput">Test input</label>
+                <input id="testInput" type="text" ng-model="data" md-autofocus>
+              </md-input-container>
+            </form>
+          </md-sidenav>
+        </div>
+
 
 
         <!-- bower:js -->

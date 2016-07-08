@@ -1,2 +1,2 @@
-let orders = {'name': 'Apple'};
-alert(orders);
+//let orders = {'name': 'Apple'};
+//console.log(orders);
