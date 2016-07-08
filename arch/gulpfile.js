@@ -13,6 +13,7 @@ var gulpsync = require('gulp-sync')(gulp);
 var bower = require('gulp-bower');
 var wiredep = require('wiredep').stream;
 
+const mainPath = '';
 const srcPath  = 'src';
 const distPath = 'dist';
 const tempPath = 'temp';
@@ -26,8 +27,8 @@ const imagesPath = 'images';
 const thirdPartyPath = 'thirdparty';
 const viewsPath = 'views';
 
-const bowerJsonPath = './src/bower.json';
-const bowerComponentsPath = 'src/bower_components';
+const bowerJsonPath = './bower.json';
+const bowerComponentsPath = 'temp/bower_components';
 
 const indexPagePath = 'index.html';
 const viewsExtension = 'html';
@@ -304,8 +305,8 @@ gulp.task('includeCss:dev', function () {
 gulp.task('bower', function() {
   return bower({ 
   	cmd: 'install',
-  	cwd: (`${srcPath}`), 
-  	//directory: `${bowerComponentsPath}`,
+  	cwd: (`${mainPath}`), 
+  	directory: `${bowerComponentsPath}`,
   	interactive: true
   });
 });
@@ -313,8 +314,8 @@ gulp.task('bower', function() {
 gulp.task('bower:deploy', function() {
   return bower({ 
   	cmd: 'install',
-  	cwd: (`${srcPath}`), 
-  	//directory: `${bowerComponentsPath}`,
+  	cwd: (`${mainPath}`), 
+  	directory: `${bowerComponentsPath}`,
   	interactive: true
   });
 });
@@ -322,6 +323,23 @@ gulp.task('bower:deploy', function() {
 
 gulp.task('bowerInject', function () {
 	
+	return gulp
+		.src(`${tempPath}/${indexPagePath}`)
+		.pipe(wiredep({
+    		directory: `${bowerComponentsPath}`,
+    		bowerJson: require(`${bowerJsonPath}`)
+		}))
+		.pipe(gulp.dest(`${tempPath}`));
+
+});
+
+gulp.task('copyBower:temp', function () {
+	
+	return gulp
+	    .src(`./${tempPath}/**/*`)
+	    .pipe(gulp.dest(`./${distPath}`));
+
+
 	return gulp
 		.src(`${tempPath}/${indexPagePath}`)
 		.pipe(wiredep({
@@ -404,6 +422,7 @@ gulp.task('dev', gulpsync.sync([
 	'includeJs:dev',
 
 	'bower',
+	'copyBower:temp',
 	'bowerInject',
 
 	'copyToDist',
@@ -439,6 +458,7 @@ gulp.task('deploy', gulpsync.sync([
 	'includeJs:deploy',
 
 	'bower:deploy',
+	'copyBower:temp',
 	'bowerInject',
 
 	'copyToDist',
