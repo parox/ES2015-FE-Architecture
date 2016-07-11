@@ -13,37 +13,28 @@
         <!-- bower:css -->
         <!-- endbower -->
 
-        <!-- inject:css -->
+        <!-- inject:css --
         <!-- endinject -->
 
     </head>
-	<div class="loader" ng-hide="initialized">
-		
-	</div>	
+  <div class="loader" ng-hide="initialized">
+    
+  </div>  
     <body data-ng-app="app">
-        Hello Daptive
+        
+        <div ng-controller="mainCtrl as vm" layout="column" style="height:100%;" ng-cloak>
+          <section layout="row" flex>
+            <md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" md-disable-backdrop md-whiteframe="10">
+              <div ng-include="views/main/main.html"></div>
+            </md-sidenav>
 
+            <md-content flex layout-padding>
+              <div ui-view></div>    
+            </md-content>
 
-        <div layout="row" ng-controller="mainCtrl as vm">
-          <md-sidenav md-component-id="left" class="md-sidenav-left">
-            Left Nav!
-          </md-sidenav>
-          <md-content>
-            Center Content
-            <md-button ng-click="vm.openLeftMenu()">
-              Open Left Menu
-            </md-button>
-          </md-content>
-          <md-sidenav md-component-id="right" md-is-locked-open="$mdMedia('min-width: 333px')" class="md-sidenav-right">
-            <form>
-              <md-input-container>
-                <label for="testInput">Test input</label>
-                <input id="testInput" type="text" ng-model="data" md-autofocus>
-              </md-input-container>
-            </form>
-          </md-sidenav>
+            <md-sidenav class="md-sidenav-right md-whiteframe-4dp" md-component-id="right"></md-sidenav>
+          </section>
         </div>
-
 
 
         <!-- bower:js -->
