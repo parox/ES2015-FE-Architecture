@@ -28,7 +28,7 @@ const thirdPartyPath = 'thirdparty';
 const viewsPath = 'views';
 
 const bowerJsonPath = './bower.json';
-const bowerComponentsPath = 'temp/bower_components';
+const bowerComponentsPath = 'bower_components';
 
 const indexPagePath = 'index.html';
 const viewsExtension = 'html';
@@ -334,19 +334,10 @@ gulp.task('bowerInject', function () {
 });
 
 gulp.task('copyBower:temp', function () {
-	
+	console.log(`${bowerComponentsPath}`);
 	return gulp
-	    .src(`./${tempPath}/**/*`)
-	    .pipe(gulp.dest(`./${distPath}`));
-
-
-	return gulp
-		.src(`${tempPath}/${indexPagePath}`)
-		.pipe(wiredep({
-    		directory: `${bowerComponentsPath}`,
-    		bowerJson: require(`${bowerJsonPath}`)
-		}))
-		.pipe(gulp.dest(`${tempPath}`));
+		.src(`${bowerComponentsPath}/**/*`)
+		.pipe(gulp.dest(`${tempPath}/${bowerComponentsPath}`));
 
 });
 
@@ -382,7 +373,8 @@ gulp.task('copy:thirdparty', function() {
 
 gulp.task('copy:views', function() {
   return gulp
-    .src(`./${srcPath}/**/*.${viewsExtension}`)
+    .src([`./${srcPath}/**/*.${viewsExtension}`])
+
     .pipe(gulp.dest(`./${tempPath}`));
 });
 
