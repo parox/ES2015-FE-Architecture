@@ -22,10 +22,10 @@
   </div>  
     <body data-ng-app="app">
         
-        <div ng-controller="mainCtrl as vm" layout="column" style="height:100%;" ng-cloak>
+        <div layout="column" style="height:100%;" ng-cloak>
           <section layout="row" flex>
             <md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-md')" md-disable-backdrop md-whiteframe="10">
-              <div ng-include="views/main/main.html"></div>
+              <div ng-include src="'views/navbar/navbar.html'"></div>
             </md-sidenav>
 
             <md-content flex layout-padding>

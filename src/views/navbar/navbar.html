@@ -1,9 +1,9 @@
-<md-content layout-padding >
-    <md-button class="md-fab md-mini md-primary" aria-label="Use Android">
-		<md-icon md-font-icon="md-icon dp48" style="color: greenyellow;"></md-icon>
+<md-content layout-padding ng-controller="navBarCtrl as vm">
+    <md-button class="md-fab md-mini md-primary">
+		<md-icon md-font-icon="md-icon dp48"></md-icon>
     </md-button>
 
     <!-- We'll also add some navigation: -->
-    <a ui-sref="main">Home</a>
-    <a ui-sref="commoditty">Produtos</a>
+    <a ui-sref="/main">Home</a>
+    <a ui-sref="/commoditty">Produtos</a>
 </md-content>

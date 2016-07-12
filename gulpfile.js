@@ -86,7 +86,7 @@ gulp.task('clean:dist', function () {
 });
 
 gulp.task('clean:temp', function () {
-  return del([`${tempPath}/*`]);
+  return del([`${tempPath}`]);
 });
 
 gulp.task('clean:bowerComponent', function () {

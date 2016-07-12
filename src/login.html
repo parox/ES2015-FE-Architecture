@@ -1,70 +1,70 @@
 <!doctype html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+<html lang="en" >
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
 
-        <title>FE-Daptive::Login</title>
+  <title>FE-Daptive::Login</title>
 
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-        <!-- Place favicon.ico in the root directory -->
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <!-- Place favicon.ico in the root directory -->
 
-        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
-    </head>
-  <div class="loader" ng-hide="initialized">
-    
-  </div>  
-    <body layout="row">
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.css">
+</head>
+<body ng-app="loginApp" ng-cloak>
+  <!--
+    Your HTML content here
+  -->  
       
-      <!-- Container #1 (see wireframe) -->
-      <!--md-toolbar layout="row" >
-        <h1>Angular Material - Starter App</h1>
-      </md-toolbar-->
+      <md-content layout="horizontal" flex id="content" style="min-height: 100%; min-width: 100%; padding-top:200px;">
+        
+          <div layout="row" layout-align="center" layout-fill>
+            <md-whiteframe class="md-whiteframe-z1" layout="column" flex="30" layout-padding layout-margin="200">
+              <md-content>
+                
+                <md-input-container class="md-block">
+                  <label>Email</label>
+                  <input ng-model="user.email" type="email" required>
+                </md-input-container>
 
-      <!-- Container #2 -->
-      <div flex layout="row">
+                <md-input-container class="md-block">
+                  <label>Password</label>
+                  <input ng-model="user.password" type="password" required>
+                </md-input-container>
 
-          <!-- Container #3 -->
-          <md-sidenav md-is-locked-open="true" class="md-whiteframe-z2">
-
-            <md-list>
-
-              <!-- List item #1 -->
-              <md-list-item >
-                  <md-button>
-                    <md-icon md-svg-src="./assets/svg/avatar-1.svg" class="avatar"></md-icon>
-                    Lia Luogo
-                  </md-button>
-              </md-list-item>
-
-              <!-- List item #2 -->
-              <md-list-item >
-                  <md-button>
-                   <md-icon md-svg-src="./assets/svg/avatar-4.svg" class="avatar"></md-icon>
-                    Lawrence Ray
-                  </md-button>
-              </md-list-item>
-
-            </md-list>
-
-          </md-sidenav>
-
-          <!-- Container #4 -->
-          <md-content flex id="content">
-bbb          
-          </md-content>
-
-      </div>
+                <md-input-container >
+                    <md-button class="md-raised" flex="50" flex-sm="100">Login</md-button>
+                    <md-button class="md-raised md-primary" flex="50" flex-sm="100">Register</md-button>
+                </md-input-container>
+              </md-content>
+            </md-whiteframe>
+          </div>
+        
+      </md-content>
 
 
+  <!-- Angular Material requires Angular.js Libraries -->
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
 
-      <!-- Angular Material requires Angular.js Libraries -->
-      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
-      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js"></script>
-      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js"></script>
-      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-messages.min.js"></script>
-
-      <!-- Angular Material Library -->
-      <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.js"></script>
-    </body>
+  <!-- Angular Material Library -->
+  <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc2/angular-material.min.js"></script>
+  
+  <!-- Your application bootstrap  -->
+  <script type="text/javascript">    
+    /**
+     * You must include the dependency on 'ngMaterial' 
+     */
+    angular.module('loginApp', ['ngMaterial']);
+  </script>
+  
+</body>
 </html>
+
+<!--
+Copyright 2016 Google Inc. All Rights Reserved. 
+Use of this source code is governed by an MIT-style license that can be in foundin the LICENSE file at http://material.angularjs.org/license.
+-->

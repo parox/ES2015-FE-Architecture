@@ -28,14 +28,7 @@
 	    .state('commodity', {
 	      url: "/commodity",
 	      templateUrl: "views/commodity/commodity.html"
-	    })
-	    /*.state('commodity.list', {
-	      url: "/list",
-	      templateUrl: "partials/commodity.list.html",
-	      controller: function($scope) {
-	        $scope.things = ["A", "Set", "Of", "Things"];
-	      }
-	    })*/;
+	    });
 	});
 
 }).call(this);
