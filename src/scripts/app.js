@@ -4,6 +4,7 @@
         'ngMaterial',
         'ui.router',
         
+        'app.factories',
         'app.controllers'
     ]);
 
